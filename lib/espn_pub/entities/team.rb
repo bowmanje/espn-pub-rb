@@ -1,0 +1,53 @@
+# frozen_string_literal: true
+
+module EspnPub
+  module Entities
+    # Represents a sports team, eg. Miami Heat, New England Patriots, etc.
+    class Team < Base
+
+      ROSTER_PATH = '/apis/site/%s/sports/%s/%s/teams/%s/roster'
+
+      attr_reader :id,
+                  :name,
+                  :location,
+                  :abbreviation,
+                  :sport,
+                  :league
+
+      def initialize(id:, name:, location:, abbreviation:, sport:, league:)
+        @id = id
+        @name = name
+        @location = location
+        @abbreviation = abbreviation
+        @sport = sport
+        @league = league
+        super()
+      end
+
+      def players
+        unless defined?(@roster)
+          begin
+            path = format ROSTER_PATH, client.version, sport, league, id
+            roster_resp = client.send_request(path)
+            @roster = (roster_resp.dig('athletes') || []).map do |athlete_data|
+              player = EspnPub::Entities::Player.new(
+                id: athlete_data['id'],
+                sport: sport,
+                league: league,
+                first_name: athlete_data['firstName'],
+                last_name: athlete_data['lastName'],
+                position: athlete_data['position']['abbreviation'],
+                team_id: id
+              )
+            end
+          rescue Client::UnexpectedResponseCodeError => e
+            warn "Failed to fetch roster for team #{name} (#{id}): #{e.message}"
+            return []
+          end
+        end
+
+        @roster
+      end
+    end
+  end
+end

@@ -5,15 +5,13 @@ require 'spec_helper'
 RSpec.describe EspnPub::Client do
   let(:base_uri) { 'https://site.api.espn.com/' }
   let(:version) { 'v2' }
-  let(:league) { 'nba' }
-  let(:client) { described_class.new(base_uri: base_uri, version: version, league: league) }
+  let(:client) { described_class.new(base_uri: base_uri, version: version) }
 
   describe '#initialize' do
-    it 'exposes uri, version, and league' do
+    it 'exposes uri, version' do
       expect(client.uri).to be_a(URI)
       expect(client.uri.to_s).to eq(base_uri)
       expect(client.version).to eq(version)
-      expect(client.league).to eq(league)
     end
   end
 

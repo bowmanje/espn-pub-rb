@@ -1,21 +1,21 @@
 # frozen_string_literal: true
 
 require 'net/http'
+require 'json'
 
 module EspnPub
   # Client for making requests to the ESPN public API.
   class Client
-    class NotExpectedResponseCodeError < StandardError; end
+    class UnexpectedResponseCodeError < StandardError; end
 
     BASE_URI = 'https://site.api.espn.com/'
     API_VERSION = 'v2'
 
-    attr_reader :uri, :version, :league
+    attr_reader :uri, :version
 
-    def initialize(base_uri:, version:, league:)
+    def initialize(base_uri:, version:)
       @uri = get_uri(base_uri)
       @version = version
-      @league = league
     end
 
     def send_request(path)
@@ -23,7 +23,7 @@ module EspnPub
         http.request_get path
       end
 
-      raise NotExpectedResponseCodeError, "Unexpected response code: #{response.code}" unless response.code.to_i == 200
+      raise UnexpectedResponseCodeError, "Unexpected response code: #{response.code}" unless response.code.to_i == 200
 
       JSON.parse response.body
     end
