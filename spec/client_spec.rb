@@ -45,7 +45,7 @@ RSpec.describe EspnPub::Client do
         .to_return(status: 500, body: 'server error')
 
       expect { client.send_request(path) }
-        .to raise_error(EspnPub::Client::NotExpectedResponseCodeError, 'Unexpected response code: 500')
+        .to raise_error(EspnPub::Client::UnexpectedResponseCodeError, 'Unexpected response code: 500')
     end
   end
 end

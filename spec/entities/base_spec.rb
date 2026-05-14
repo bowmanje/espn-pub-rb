@@ -13,7 +13,7 @@ RSpec.describe EspnPub::Entities::Base do
   end
   
   describe '#init_client' do
-    subject { described_class.new.init_client }
+    subject { described_class.new.send :init_client }
     let(:base) { described_class.new }
     
     it 'returns a new client instance' do

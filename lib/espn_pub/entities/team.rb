@@ -14,6 +14,14 @@ module EspnPub
                   :sport,
                   :league
 
+      # Initialize a Team entity.
+      #
+      # @param id [String] The team identifier.
+      # @param name [String] The team name.
+      # @param location [String] The team location.
+      # @param abbreviation [String] The team abbreviation.
+      # @param sport [String] The sport name.
+      # @param league [String] The league identifier.
       def initialize(id:, name:, location:, abbreviation:, sport:, league:)
         @id = id
         @name = name
@@ -24,6 +32,9 @@ module EspnPub
         super()
       end
 
+      # Fetch the roster for this team.
+      #
+      # @return [Array<EspnPub::Entities::Player>]
       def players
         unless defined?(@roster)
           begin

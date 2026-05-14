@@ -6,7 +6,7 @@ module EspnPub
   module Entities
     # Represents a sports league, eg. NBA, NFL, etc.
     class League < Base
-      # Supported league names
+      # Supported league names.
       module NAME
         NBA = 'nba'
         NFL = 'nfl'
@@ -22,11 +22,17 @@ module EspnPub
 
       attr_reader :name
 
+      # Initialize a League instance.
+      #
+      # @param name [String] The league identifier string.
       def initialize(name)
         @name = name
         super()
       end
 
+      # Fetch the teams for this league.
+      #
+      # @return [Array<EspnPub::Entities::Team>]
       def teams
         unless defined?(@teams)
           begin
@@ -51,6 +57,10 @@ module EspnPub
         @teams
       end
 
+      # Fetch games for this league.
+      #
+      # @param date [Date, DateTime, nil] An optional date to filter games.
+      # @return [Array<EspnPub::Entities::Game>]
       def games(date: nil)
         begin
           path = format GAMES_PATH, client.version, self.sport, name
@@ -70,6 +80,9 @@ module EspnPub
         end
       end
 
+      # Return the sport name for this league.
+      #
+      # @return [String, nil] The sport name or nil when unknown.
       def sport
         NAME_TO_SPORT[name]
       end
