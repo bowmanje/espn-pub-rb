@@ -36,7 +36,7 @@ module EspnPub
       #
       # @return [String] The player's full name.
       def full_name
-        @full_name ||= first_name + ' ' + last_name
+        @full_name ||= "#{first_name} #{last_name}"
       end
     end
   end

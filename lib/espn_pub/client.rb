@@ -18,7 +18,7 @@ module EspnPub
     #
     # @param base_uri [String] The base URI for ESPN API requests.
     # @param version [String] The API version string.
-    def initialize(base_uri:, version:)
+    def initialize(base_uri: BASE_URI, version: API_VERSION)
       @uri = get_uri(base_uri)
       @version = version
     end

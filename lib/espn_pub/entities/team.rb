@@ -5,6 +5,7 @@ module EspnPub
     # Represents a sports team, eg. Miami Heat, New England Patriots, etc.
     class Team < Base
 
+      TEAM_PATH = '/apis/site/%s/sports/%s/%s/teams/%s'
       ROSTER_PATH = '/apis/site/%s/sports/%s/%s/teams/%s/roster'
 
       attr_reader :id,
@@ -30,6 +31,28 @@ module EspnPub
         @sport = sport
         @league = league
         super()
+      end
+
+      def self.fetch_by_id(id:, sport:, league:)
+        client = EspnPub::Client.new
+        path = format TEAM_PATH, client.version, sport, league, id
+        begin
+          team_data = client.send_request(path).dig('team')
+        rescue Client::UnexpectedResponseCodeError => e
+          warn "Failed to fetch team data for #{id}: #{e.message}"
+          return nil
+        end
+
+        return nil unless team_data
+
+        new(
+          id: team_data['id'],
+          name: team_data['name'],
+          location: team_data['location'],
+          abbreviation: team_data['abbreviation'],
+          sport: sport,
+          league: league
+        )
       end
 
       # Fetch the roster for this team.
@@ -58,6 +81,13 @@ module EspnPub
         end
 
         @roster
+      end
+
+      # Return the team's full name.
+      #
+      # @return [String] The team's full name.
+      def full_name
+        @full_name ||= "#{location} #{name}"
       end
     end
   end

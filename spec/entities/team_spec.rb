@@ -7,8 +7,8 @@ RSpec.describe EspnPub::Entities::Team do
   let(:name) { Faker::Sports::Basketball.team.split(' ').last }
   let(:location) { Faker::Address.city }
   let(:abbreviation) { Faker::Alphanumeric.alpha(number: 3).upcase }
-  let(:sport) { 'basketball' }
-  let(:league) { 'nba' }
+  let(:sport) { EspnPub::Entities::League::NAME_TO_SPORT[league] }
+  let(:league) { EspnPub::Entities::League::NAME::NBA }
   let(:positions) { %w[G F C] }
 
   describe '#initialize' do
@@ -49,6 +49,67 @@ RSpec.describe EspnPub::Entities::Team do
 
     it 'has a client from Base' do
       expect(subject.client).to be_a(EspnPub::Client)
+    end
+  end
+
+  describe '.fetch_by_id' do
+    subject { described_class.fetch_by_id(id: team_id, sport: sport, league: league) }
+
+    let(:path) { "/apis/site/v2/sports/#{sport}/#{league}/teams/#{team_id}" }
+    let(:status) { 200 }
+    let(:team_response) do
+      {
+        'team' => {
+          'id' => team_id,
+          'name' => name,
+          'location' => location,
+          'abbreviation' => abbreviation
+        }
+      }
+    end
+
+    before do
+      stub_request(:get, "https://site.api.espn.com#{path}")
+        .to_return(status: status, body: team_response.to_json, headers: { 'Content-Type' => 'application/json' })
+    end
+
+    it 'sends a request to the correct path' do
+      expect_any_instance_of(EspnPub::Client).to receive(:send_request).with(path).and_return(team_response)
+      subject
+    end
+
+    context 'when the request is successful' do
+      context 'when team data is present' do
+        it 'returns a Team instance with correct attributes' do
+          expect(subject).to be_a(EspnPub::Entities::Team)
+          expect(subject.id).to eq(team_id)
+          expect(subject.name).to eq(name)
+          expect(subject.location).to eq(location)
+          expect(subject.abbreviation).to eq(abbreviation)
+          expect(subject.sport).to eq(sport)
+          expect(subject.league).to eq(league)
+        end
+      end
+
+      context 'when team data is missing' do
+        let(:team_response) { {} }
+
+        it 'returns nil' do
+          expect(subject).to be_nil
+        end
+      end
+    end
+
+    context 'when the request is not successful' do
+      let(:status) { 500 }
+      let(:team_response) { 'internal_error' }
+
+      it 'logs a warning' do
+        expect_any_instance_of(Kernel).to receive(:warn).with(/Failed to fetch team data for/)
+        subject
+      end
+
+      it { is_expected.to be_nil }
     end
   end
 
@@ -142,5 +203,22 @@ RSpec.describe EspnPub::Entities::Team do
 
       it { is_expected.to eq([]) }
     end
+  end
+
+  describe '#full_name' do
+    subject { team.full_name }
+
+    let(:team) do
+      described_class.new(
+        id: team_id,
+        name: name,
+        location: location,
+        abbreviation: abbreviation,
+        sport: sport,
+        league: league
+       )
+     end
+
+     it { is_expected.to eq("#{location} #{name}") }
   end
 end
