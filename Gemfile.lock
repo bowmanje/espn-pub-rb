@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    espn_pub (0.1.0)
+    espn_pub (0.1.2)
       date (~> 3.3)
       json (~> 2.6)
       net-http (~> 0.3)
