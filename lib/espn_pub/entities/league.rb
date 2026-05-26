@@ -69,8 +69,16 @@ module EspnPub
           (games_resp.dig('events') || []).map do |game_data|
             EspnPub::Entities::Game.new(
               id: game_data['id'],
-              home_team_id: game_data.dig('competitions', 0, 'competitors', 0, 'id'),
-              away_team_id: game_data.dig('competitions', 0, 'competitors', 1, 'id'),
+              home_team: EspnPub::Entities::Team.fetch_by_id(
+                id: game_data.dig('competitions', 0, 'competitors', 0, 'id'),
+                sport: sport,
+                league: name
+              ),
+              away_team: EspnPub::Entities::Team.fetch_by_id(
+                id: game_data.dig('competitions', 0, 'competitors', 1, 'id'),
+                sport: sport,
+                league: name
+              ),
               date: DateTime.parse(game_data['date'])
             )
           end

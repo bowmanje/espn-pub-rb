@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 require 'bundler/setup'
+require 'simplecov'
+
+SimpleCov.start do
+  add_filter 'spec/'
+end
+
 require 'webmock/rspec'
 require 'faker'
 require_relative '../lib/espn_pub'

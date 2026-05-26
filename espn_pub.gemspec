@@ -14,7 +14,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 3.3.0'
   spec.metadata = {
     'homepage_uri' => spec.homepage,
-    'source_code_uri' => spec.homepage
+    'source_code_uri' => spec.homepage,
+    'documentation_uri' => 'https://www.rubydoc.info/gems/espn_pub'
   }
 
   spec.files = Dir.glob('{lib,sig}/**/*', File::FNM_DOTMATCH)
@@ -31,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop',   '~> 1.65'
   spec.add_development_dependency 'rubocop-rspec', '~> 3.0'
   spec.add_development_dependency 'webmock', '~> 3.23'
+  spec.add_development_dependency 'faker', '~> 2.21'
 end
