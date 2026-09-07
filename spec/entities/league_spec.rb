@@ -23,13 +23,13 @@ RSpec.describe EspnPub::Entities::League do
     context 'when the league is NBA' do
       let(:league_name) { described_class::NAME::NBA }
 
-      it {  is_expected.to eq('basketball') }
+      it { is_expected.to eq('basketball') }
     end
 
     context 'when the league is NFL' do
       let(:league_name) { described_class::NAME::NFL }
 
-      it {  is_expected.to eq('football') }
+      it { is_expected.to eq('football') }
     end
   end
 
@@ -47,7 +47,7 @@ RSpec.describe EspnPub::Entities::League do
             'abbreviation' => Faker::Alphanumeric.alpha(number: 3).upcase
           }
         },
-        { 
+        {
           'team' => {
             'id' => Faker::Number.number(digits: 5),
             'location' => Faker::Address.city,
@@ -189,7 +189,7 @@ RSpec.describe EspnPub::Entities::League do
 
     context 'when the game_date is nil' do
       let(:game_date) { nil }
-      let(:path) { "/apis/site/v2/sports/basketball/nba/scoreboard" }
+      let(:path) { '/apis/site/v2/sports/basketball/nba/scoreboard' }
 
       it 'sends a request to the ESPN games path' do
         expect(league.client).to receive(:send_request).with(path).and_return(games_response)

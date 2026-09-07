@@ -10,6 +10,20 @@ RSpec.describe EspnPub::Entities::Team do
   let(:sport) { EspnPub::Entities::League::NAME_TO_SPORT[league] }
   let(:league) { EspnPub::Entities::League::NAME::NBA }
   let(:positions) { %w[G F C] }
+  let(:venue_id) { Faker::Number.unique.number(digits: 4).to_s }
+  let(:venue_name) { Faker::Company.name }
+  let(:venue_city) { Faker::Address.city }
+  let(:venue_state) { Faker::Address.state_abbr }
+  let(:venue) do
+    EspnPub::Entities::Venue.new(
+      id: venue_id,
+      full_name: venue_name,
+      city: venue_city,
+      state: venue_state,
+      indoor: true,
+      grass: false
+    )
+  end
 
   describe '#initialize' do
     subject do
@@ -47,6 +61,28 @@ RSpec.describe EspnPub::Entities::Team do
       expect(subject.league).to eq(league)
     end
 
+    it 'defaults venue to nil' do
+      expect(subject.venue).to be_nil
+    end
+
+    context 'when venue is provided' do
+      subject do
+        described_class.new(
+          id: team_id,
+          name: name,
+          location: location,
+          abbreviation: abbreviation,
+          sport: sport,
+          league: league,
+          venue: venue
+        )
+      end
+
+      it 'has the correct venue' do
+        expect(subject.venue).to eq(venue)
+      end
+    end
+
     it 'has a client from Base' do
       expect(subject.client).to be_a(EspnPub::Client)
     end
@@ -63,7 +99,19 @@ RSpec.describe EspnPub::Entities::Team do
           'id' => team_id,
           'name' => name,
           'location' => location,
-          'abbreviation' => abbreviation
+          'abbreviation' => abbreviation,
+          'franchise' => {
+            'venue' => {
+              'id' => venue_id,
+              'fullName' => venue_name,
+              'address' => {
+                'city' => venue_city,
+                'state' => venue_state
+              },
+              'indoor' => true,
+              'grass' => false
+            }
+          }
         }
       }
     end
@@ -88,6 +136,30 @@ RSpec.describe EspnPub::Entities::Team do
           expect(subject.abbreviation).to eq(abbreviation)
           expect(subject.sport).to eq(sport)
           expect(subject.league).to eq(league)
+          expect(subject.venue).to be_a(EspnPub::Entities::Venue)
+          expect(subject.venue.id).to eq(venue_id)
+          expect(subject.venue.full_name).to eq(venue_name)
+          expect(subject.venue.city).to eq(venue_city)
+          expect(subject.venue.state).to eq(venue_state)
+          expect(subject.venue.indoor).to be(true)
+          expect(subject.venue.grass).to be(false)
+        end
+      end
+
+      context 'when venue data is missing' do
+        let(:team_response) do
+          {
+            'team' => {
+              'id' => team_id,
+              'name' => name,
+              'location' => location,
+              'abbreviation' => abbreviation
+            }
+          }
+        end
+
+        it 'returns a Team with a nil venue' do
+          expect(subject.venue).to be_nil
         end
       end
 
@@ -130,19 +202,19 @@ RSpec.describe EspnPub::Entities::Team do
     let(:roster_payload) do
       [
         {
-          'id' =>  Faker::Number.unique.number(digits: 5).to_s,
+          'id' => Faker::Number.unique.number(digits: 5).to_s,
           'firstName' => Faker::Name.first_name,
           'lastName' => Faker::Name.last_name,
           'position' => { 'abbreviation' => positions.sample }
         },
         {
-          'id' =>  Faker::Number.unique.number(digits: 5).to_s,
+          'id' => Faker::Number.unique.number(digits: 5).to_s,
           'firstName' => Faker::Name.first_name,
           'lastName' => Faker::Name.last_name,
           'position' => { 'abbreviation' => positions.sample }
         },
         {
-          'id' =>  Faker::Number.unique.number(digits: 5).to_s,
+          'id' => Faker::Number.unique.number(digits: 5).to_s,
           'firstName' => Faker::Name.first_name,
           'lastName' => Faker::Name.last_name,
           'position' => { 'abbreviation' => positions.sample }
@@ -216,9 +288,9 @@ RSpec.describe EspnPub::Entities::Team do
         abbreviation: abbreviation,
         sport: sport,
         league: league
-       )
-     end
+      )
+    end
 
-     it { is_expected.to eq("#{location} #{name}") }
+    it { is_expected.to eq("#{location} #{name}") }
   end
 end

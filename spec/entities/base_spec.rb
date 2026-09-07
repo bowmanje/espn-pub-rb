@@ -11,10 +11,10 @@ RSpec.describe EspnPub::Entities::Base do
       subject
     end
   end
-  
+
   describe '#init_client' do
     subject { described_class.new.send :init_client }
-    
+
     it 'returns a new client instance' do
       expect(subject).to be_a(EspnPub::Client)
     end

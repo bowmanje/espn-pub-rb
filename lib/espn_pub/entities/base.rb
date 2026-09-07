@@ -14,13 +14,14 @@ module EspnPub
       end
 
       private
+
       # Build a new EspnPub::Client for API requests.
       #
       # @return [EspnPub::Client]
       def init_client
         EspnPub::Client.new(
           base_uri: Client::BASE_URI,
-          version: Client::API_VERSION,
+          version: Client::API_VERSION
         )
       end
     end

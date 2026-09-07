@@ -4,7 +4,6 @@ module EspnPub
   module Entities
     # Represents a sports team, eg. Miami Heat, New England Patriots, etc.
     class Team < Base
-
       TEAM_PATH = '/apis/site/%s/sports/%s/%s/teams/%s'
       ROSTER_PATH = '/apis/site/%s/sports/%s/%s/teams/%s/roster'
 
@@ -13,7 +12,8 @@ module EspnPub
                   :location,
                   :abbreviation,
                   :sport,
-                  :league
+                  :league,
+                  :venue
 
       # Initialize a Team entity.
       #
@@ -23,13 +23,15 @@ module EspnPub
       # @param abbreviation [String] The team abbreviation.
       # @param sport [String] The sport name.
       # @param league [String] The league identifier.
-      def initialize(id:, name:, location:, abbreviation:, sport:, league:)
+      # @param venue [EspnPub::Entities::Venue, nil] The team's home venue.
+      def initialize(id:, name:, location:, abbreviation:, sport:, league:, venue: nil)
         @id = id
         @name = name
         @location = location
         @abbreviation = abbreviation
         @sport = sport
         @league = league
+        @venue = venue
         super()
       end
 
@@ -37,7 +39,7 @@ module EspnPub
         client = EspnPub::Client.new
         path = format TEAM_PATH, client.version, sport, league, id
         begin
-          team_data = client.send_request(path).dig('team')
+          team_data = client.send_request(path)['team']
         rescue Client::UnexpectedResponseCodeError => e
           warn "Failed to fetch team data for #{id}: #{e.message}"
           return nil
@@ -51,7 +53,8 @@ module EspnPub
           location: team_data['location'],
           abbreviation: team_data['abbreviation'],
           sport: sport,
-          league: league
+          league: league,
+          venue: EspnPub::Entities::Venue.from_api(team_data.dig('franchise', 'venue'))
         )
       end
 
@@ -63,15 +66,22 @@ module EspnPub
           begin
             path = format ROSTER_PATH, client.version, sport, league, id
             roster_resp = client.send_request(path)
-            @roster = (roster_resp.dig('athletes') || []).map do |athlete_data|
-              player = EspnPub::Entities::Player.new(
+            @roster = (roster_resp['athletes'] || []).map do |athlete_data|
+              EspnPub::Entities::Player.new(
                 id: athlete_data['id'],
                 sport: sport,
                 league: league,
                 first_name: athlete_data['firstName'],
                 last_name: athlete_data['lastName'],
                 position: athlete_data['position']['abbreviation'],
-                team_id: id
+                team_id: id,
+                birthCity: athlete_data.dig('birthPlace', 'city'),
+                birthState: athlete_data.dig('birthPlace', 'state'),
+                birthCountry: athlete_data.dig('birthPlace', 'country'),
+                date_of_birth: athlete_data['dateOfBirth'],
+                height: athlete_data['height'],
+                weight: athlete_data['weight'],
+                debut_year: athlete_data['debutYear']
               )
             end
           rescue Client::UnexpectedResponseCodeError => e

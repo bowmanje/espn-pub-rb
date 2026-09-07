@@ -36,7 +36,7 @@ module EspnPub
       def teams
         unless defined?(@teams)
           begin
-            path = format TEAMS_PATH, client.version, self.sport, name
+            path = format TEAMS_PATH, client.version, sport, name
             teams_resp = client.send_request(path)
             @teams = (teams_resp.dig('sports', 0, 'leagues', 0, 'teams') || []).map do |team_data|
               EspnPub::Entities::Team.new(
@@ -62,30 +62,28 @@ module EspnPub
       # @param date [Date, DateTime, nil] An optional date to filter games.
       # @return [Array<EspnPub::Entities::Game>]
       def games(date: nil)
-        begin
-          path = format GAMES_PATH, client.version, self.sport, name
-          path += "?dates=#{date.strftime('%Y%m%d')}" if date
-          games_resp = client.send_request(path)
-          (games_resp.dig('events') || []).map do |game_data|
-            EspnPub::Entities::Game.new(
-              id: game_data['id'],
-              home_team: EspnPub::Entities::Team.fetch_by_id(
-                id: game_data.dig('competitions', 0, 'competitors', 0, 'id'),
-                sport: sport,
-                league: name
-              ),
-              away_team: EspnPub::Entities::Team.fetch_by_id(
-                id: game_data.dig('competitions', 0, 'competitors', 1, 'id'),
-                sport: sport,
-                league: name
-              ),
-              date: DateTime.parse(game_data['date'])
-            )
-          end
-        rescue Client::UnexpectedResponseCodeError => e
-          warn "Failed to fetch games for league #{name}: #{e.message}"
-          return []
+        path = format GAMES_PATH, client.version, sport, name
+        path += "?dates=#{date.strftime('%Y%m%d')}" if date
+        games_resp = client.send_request(path)
+        (games_resp['events'] || []).map do |game_data|
+          EspnPub::Entities::Game.new(
+            id: game_data['id'],
+            home_team: EspnPub::Entities::Team.fetch_by_id(
+              id: game_data.dig('competitions', 0, 'competitors', 0, 'id'),
+              sport: sport,
+              league: name
+            ),
+            away_team: EspnPub::Entities::Team.fetch_by_id(
+              id: game_data.dig('competitions', 0, 'competitors', 1, 'id'),
+              sport: sport,
+              league: name
+            ),
+            date: DateTime.parse(game_data['date'])
+          )
         end
+      rescue Client::UnexpectedResponseCodeError => e
+        warn "Failed to fetch games for league #{name}: #{e.message}"
+        []
       end
 
       # Return the sport name for this league.

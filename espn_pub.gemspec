@@ -23,10 +23,10 @@ Gem::Specification.new do |spec|
                %w[espn_pub.gemspec README.md]
 
   spec.require_paths = ['lib']
+  spec.add_dependency 'date', '~> 3.3'
   spec.add_dependency 'json', '~> 2.6'
   spec.add_dependency 'net-http', '~> 0.3'
   spec.add_dependency 'uri', '~> 0.11'
-  spec.add_dependency 'date', '~> 3.3'
   spec.add_development_dependency 'rake',      '~> 13.0'
   spec.add_development_dependency 'rspec',     '~> 3.13'
   spec.add_development_dependency 'rubocop',   '~> 1.65'
