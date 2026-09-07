@@ -20,7 +20,7 @@ RSpec.describe EspnPub::Entities::Base do
     end
 
     it 'initializes client with correct base URI and version' do
-      expect(subject.uri.to_s).to eq('https://site.api.espn.com/')
+      expect(subject.uri.to_s).to eq('https://site.api.espn.com')
     end
 
     it 'initializes client with correct version' do

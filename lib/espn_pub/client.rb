@@ -9,10 +9,11 @@ module EspnPub
     # Raised when the API returns an unexpected HTTP response code.
     class UnexpectedResponseCodeError < StandardError; end
 
-    BASE_URI = 'https://site.api.espn.com/'
+    BASE_URI = 'https://site.api.espn.com'
     API_VERSION = 'v2'
 
     attr_reader :uri, :version
+    attr_accessor :user_agent
 
     # Initialize a new Client.
     #
@@ -29,8 +30,12 @@ module EspnPub
     # @return [Hash] The parsed JSON response.
     # @raise [UnexpectedResponseCodeError] if the response status is not 200.
     def send_request(path)
-      response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-        http.request_get path
+      request_uri = URI "#{BASE_URI}#{path}"
+      request = Net::HTTP::Get.new(request_uri)
+
+      request["User-Agent"] = user_agent if user_agent
+      response = Net::HTTP.start(request_uri.host, request_uri.port, use_ssl: true) do |http|
+        http.request request
       end
 
       raise UnexpectedResponseCodeError, "Unexpected response code: #{response.code}" unless response.code.to_i == 200
