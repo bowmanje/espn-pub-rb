@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe EspnPub::Client do
-  let(:base_uri) { 'https://site.api.espn.com/' }
+  let(:base_uri) { 'https://site.web.api.espn.com/' }
   let(:version) { 'v2' }
   let(:client) { described_class.new(base_uri: base_uri, version: version) }
 
@@ -34,14 +34,14 @@ RSpec.describe EspnPub::Client do
     end
 
     it 'returns parsed JSON when the response code is 200' do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: 200, body: response_body, headers: { 'Content-Type' => 'application/json' })
 
       expect(client.send_request(path)).to eq(JSON.parse(response_body))
     end
 
     it 'raises NotExpectedResponseCodeError for non-200 responses' do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: 500, body: 'server error')
 
       expect { client.send_request(path) }

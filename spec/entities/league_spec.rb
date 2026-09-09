@@ -76,7 +76,7 @@ RSpec.describe EspnPub::Entities::League do
     let(:path) { '/apis/site/v2/sports/basketball/nba/teams' }
 
     before do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: status, body: teams_response.to_json, headers: { 'Content-Type' => 'application/json' })
     end
 
@@ -100,7 +100,7 @@ RSpec.describe EspnPub::Entities::League do
         first_result = league.teams
         second_result = league.teams
 
-        expect(a_request(:get, "https://site.api.espn.com#{path}")).to have_been_made.once
+        expect(a_request(:get, "https://site.web.api.espn.com#{path}")).to have_been_made.once
         expect(first_result).to eq(second_result)
       end
     end
@@ -171,19 +171,19 @@ RSpec.describe EspnPub::Entities::League do
     let(:competitor_team_path_4) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team_4}" }
 
     before do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: status, body: games_response.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.api.espn.com#{competitor_team_path_1}")
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_1}")
         .to_return(status: status, body: { 'team' => { 'id' => competitor_team_1 } }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.api.espn.com#{competitor_team_path_2}")
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_2}")
         .to_return(status: status, body: { 'team' => { 'id' => competitor_team_2 } }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.api.espn.com#{competitor_team_path_3}")
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_3}")
         .to_return(status: status, body: { 'team' => { 'id' => competitor_team_3 } }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.api.espn.com#{competitor_team_path_4}")
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_4}")
         .to_return(status: status, body: { 'team' => { 'id' => competitor_team_4 } }.to_json, headers: { 'Content-Type' => 'application/json' })
     end
 

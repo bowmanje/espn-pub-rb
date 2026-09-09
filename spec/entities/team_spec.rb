@@ -117,7 +117,7 @@ RSpec.describe EspnPub::Entities::Team do
     end
 
     before do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: status, body: team_response.to_json, headers: { 'Content-Type' => 'application/json' })
     end
 
@@ -232,7 +232,7 @@ RSpec.describe EspnPub::Entities::Team do
     let(:path) { "/apis/site/v2/sports/basketball/nba/teams/#{team_id}/roster" }
 
     before do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: status, body: roster_response.to_json, headers: { 'Content-Type' => 'application/json' })
     end
 
@@ -259,7 +259,7 @@ RSpec.describe EspnPub::Entities::Team do
         first_result = team.players
         second_result = team.players
 
-        expect(a_request(:get, "https://site.api.espn.com#{path}")).to have_been_made.once
+        expect(a_request(:get, "https://site.web.api.espn.com#{path}")).to have_been_made.once
         expect(first_result).to eq(second_result)
       end
     end

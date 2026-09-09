@@ -9,7 +9,7 @@ module EspnPub
     # Raised when the API returns an unexpected HTTP response code.
     class UnexpectedResponseCodeError < StandardError; end
 
-    BASE_URI = 'https://site.api.espn.com'
+    BASE_URI = 'https://site.web.api.espn.com'
     API_VERSION = 'v2'
 
     attr_reader :uri, :version

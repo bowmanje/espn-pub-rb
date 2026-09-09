@@ -126,7 +126,7 @@ RSpec.describe EspnPub::Entities::Player do
     end
 
     before do
-      stub_request(:get, "https://site.api.espn.com#{path}")
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: status, body: athlete_response.to_json, headers: { 'Content-Type' => 'application/json' })
     end
 
