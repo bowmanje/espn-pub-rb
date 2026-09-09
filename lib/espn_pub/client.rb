@@ -33,7 +33,7 @@ module EspnPub
       request_uri = URI "#{BASE_URI}#{path}"
       request = Net::HTTP::Get.new(request_uri)
 
-      request["User-Agent"] = user_agent if user_agent
+      request['User-Agent'] = user_agent if user_agent
       response = Net::HTTP.start(request_uri.host, request_uri.port, use_ssl: true) do |http|
         http.request request
       end

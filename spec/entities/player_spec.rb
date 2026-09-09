@@ -14,9 +14,9 @@ RSpec.describe EspnPub::Entities::Player do
   let(:height) { "6' 3\"" }
   let(:weight) { '230 lbs' }
   let(:debut_year) { 2017 }
-  let(:birthCity) { 'Tyler' }
-  let(:birthState) { 'TX' }
-  let(:birthCountry) { 'USA' }
+  let(:birth_city) { 'Tyler' }
+  let(:birth_state) { 'TX' }
+  let(:birth_country) { 'USA' }
 
   describe '#initialize' do
     subject do
@@ -29,9 +29,9 @@ RSpec.describe EspnPub::Entities::Player do
         position: position,
         team_id: team_id,
         date_of_birth: date_of_birth,
-        birthCity: birthCity,
-        birthState: birthState,
-        birthCountry: birthCountry,
+        birth_city: birth_city,
+        birth_state: birth_state,
+        birth_country: birth_country,
         height: height,
         weight: weight,
         debut_year: debut_year
@@ -112,9 +112,9 @@ RSpec.describe EspnPub::Entities::Player do
           'lastName' => last_name,
           'dateOfBirth' => '1995-09-17T00:00:00Z',
           'birthPlace' => {
-            'city' => birthCity,
-            'state' => birthState,
-            'country' => birthCountry
+            'city' => birth_city,
+            'state' => birth_state,
+            'country' => birth_country
           },
           'displayHeight' => height,
           'displayWeight' => weight,
@@ -145,9 +145,9 @@ RSpec.describe EspnPub::Entities::Player do
           expect(subject.position).to eq(position)
           expect(subject.team_id).to eq(team_id)
           expect(subject.date_of_birth).to eq(date_of_birth)
-          expect(subject.birthCity).to eq(birthCity)
-          expect(subject.birthState).to eq(birthState)
-          expect(subject.birthCountry).to eq(birthCountry)
+          expect(subject.birth_city).to eq(birth_city)
+          expect(subject.birth_state).to eq(birth_state)
+          expect(subject.birth_country).to eq(birth_country)
           expect(subject.height).to eq(height)
           expect(subject.weight).to eq(weight)
           expect(subject.debut_year).to eq(debut_year)

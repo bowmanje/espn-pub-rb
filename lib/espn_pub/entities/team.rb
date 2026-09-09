@@ -35,8 +35,10 @@ module EspnPub
         super()
       end
 
-      def self.fetch_by_id(id:, sport:, league:)
+      def self.fetch_by_id(id:, sport:, league:, user_agent: nil)
         client = EspnPub::Client.new
+        client.user_agent = user_agent if user_agent
+
         path = format TEAM_PATH, client.version, sport, league, id
         begin
           team_data = client.send_request(path)['team']
@@ -75,9 +77,9 @@ module EspnPub
                 last_name: athlete_data['lastName'],
                 position: athlete_data['position']['abbreviation'],
                 team_id: id,
-                birthCity: athlete_data.dig('birthPlace', 'city'),
-                birthState: athlete_data.dig('birthPlace', 'state'),
-                birthCountry: athlete_data.dig('birthPlace', 'country'),
+                birth_city: athlete_data.dig('birthPlace', 'city'),
+                birth_state: athlete_data.dig('birthPlace', 'state'),
+                birth_country: athlete_data.dig('birthPlace', 'country'),
                 date_of_birth: athlete_data['dateOfBirth'],
                 height: athlete_data['height'],
                 weight: athlete_data['weight'],

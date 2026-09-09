@@ -16,9 +16,9 @@ module EspnPub
                   :position,
                   :team_id,
                   :date_of_birth,
-                  :birthCity,
-                  :birthState,
-                  :birthCountry,
+                  :birth_city,
+                  :birth_state,
+                  :birth_country,
                   :height,
                   :weight,
                   :debut_year
@@ -33,14 +33,14 @@ module EspnPub
       # @param position [String, nil] The player's position abbreviation.
       # @param team_id [String, nil] The identifier of the player's team.
       # @param date_of_birth [Date, nil] The player's date of birth.
-      # @param birthCity [String, nil] The player's birth city.
-      # @param birthState [String, nil] The player's birth state.
-      # @param birthCountry [String, nil] The player's birth country.
+      # @param birth_city [String, nil] The player's birth city.
+      # @param birth_state [String, nil] The player's birth state.
+      # @param birth_country [String, nil] The player's birth country.
       # @param height [String, nil] The player's listed height.
       # @param weight [String, nil] The player's listed weight.
       # @param debut_year [Integer, nil] The year the player made their debut.
       def initialize(id:, sport:, league:, first_name: nil, last_name: nil, position: nil, team_id: nil,
-                     date_of_birth: nil, birthCity: nil, birthState: nil, birthCountry: nil, height: nil, weight: nil, debut_year: nil)
+                     date_of_birth: nil, birth_city: nil, birth_state: nil, birth_country: nil, height: nil, weight: nil, debut_year: nil)
         @id = id
         @sport = sport
         @league = league
@@ -49,9 +49,9 @@ module EspnPub
         @position = position
         @team_id = team_id
         @date_of_birth = self.class.parse_date_of_birth(date_of_birth)
-        @birthCity = birthCity
-        @birthState = birthState
-        @birthCountry = birthCountry
+        @birth_city = birth_city
+        @birth_state = birth_state
+        @birth_country = birth_country
         @height = height
         @weight = weight
         @debut_year = debut_year
@@ -85,9 +85,9 @@ module EspnPub
           position: athlete_data.dig('position', 'abbreviation'),
           team_id: athlete_data.dig('team', 'id'),
           date_of_birth: parse_date_of_birth(athlete_data['dateOfBirth']),
-          birthCity: athlete_data.dig('birthPlace', 'city'),
-          birthState: athlete_data.dig('birthPlace', 'state'),
-          birthCountry: athlete_data.dig('birthPlace', 'country'),
+          birth_city: athlete_data.dig('birthPlace', 'city'),
+          birth_state: athlete_data.dig('birthPlace', 'state'),
+          birth_country: athlete_data.dig('birthPlace', 'country'),
           height: athlete_data['displayHeight'],
           weight: athlete_data['displayWeight'],
           debut_year: athlete_data['debutYear']
