@@ -124,10 +124,10 @@ RSpec.describe EspnPub::Entities::League do
     let(:league) { described_class.new(described_class::NAME::NBA) }
     let(:sport) { league.sport }
     let(:name) { league.name }
-    let(:competitor_team_1) { Faker::Number.number(digits: 5).to_s }
-    let(:competitor_team_2) { Faker::Number.number(digits: 5).to_s }
-    let(:competitor_team_3) { Faker::Number.number(digits: 5).to_s }
-    let(:competitor_team_4) { Faker::Number.number(digits: 5).to_s }
+    let(:competitor_team1) { Faker::Number.number(digits: 5).to_s }
+    let(:competitor_team2) { Faker::Number.number(digits: 5).to_s }
+    let(:competitor_team3) { Faker::Number.number(digits: 5).to_s }
+    let(:competitor_team4) { Faker::Number.number(digits: 5).to_s }
 
     let(:games_payload) do
       [
@@ -137,8 +137,8 @@ RSpec.describe EspnPub::Entities::League do
           'competitions' => [
             {
               'competitors' => [
-                { 'id' => competitor_team_1 },
-                { 'id' => competitor_team_2 }
+                { 'id' => competitor_team1 },
+                { 'id' => competitor_team2 }
               ]
             }
           ]
@@ -149,8 +149,8 @@ RSpec.describe EspnPub::Entities::League do
           'competitions' => [
             {
               'competitors' => [
-                { 'id' => competitor_team_3 },
-                { 'id' => competitor_team_4 }
+                { 'id' => competitor_team3 },
+                { 'id' => competitor_team4 }
               ]
             }
           ]
@@ -165,26 +165,26 @@ RSpec.describe EspnPub::Entities::League do
       }
     end
 
-    let(:competitor_team_path_1) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team_1}" }
-    let(:competitor_team_path_2) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team_2}" }
-    let(:competitor_team_path_3) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team_3}" }
-    let(:competitor_team_path_4) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team_4}" }
+    let(:competitor_team_path1) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team1}" }
+    let(:competitor_team_path2) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team2}" }
+    let(:competitor_team_path3) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team3}" }
+    let(:competitor_team_path4) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team4}" }
 
     before do
       stub_request(:get, "https://site.web.api.espn.com#{path}")
         .to_return(status: status, body: games_response.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_1}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team_1 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path1}")
+        .to_return(status: status, body: { 'team' => { 'id' => competitor_team1 } }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_2}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team_2 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path2}")
+        .to_return(status: status, body: { 'team' => { 'id' => competitor_team2 } }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_3}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team_3 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path3}")
+        .to_return(status: status, body: { 'team' => { 'id' => competitor_team3 } }.to_json, headers: { 'Content-Type' => 'application/json' })
 
-      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path_4}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team_4 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+      stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path4}")
+        .to_return(status: status, body: { 'team' => { 'id' => competitor_team4 } }.to_json, headers: { 'Content-Type' => 'application/json' })
     end
 
     context 'when the game_date is nil' do
@@ -227,6 +227,71 @@ RSpec.describe EspnPub::Entities::League do
       it 'sends a request to the ESPN games path' do
         expect(league.client).to receive(:send_request).with(path).and_return(games_response)
         subject
+      end
+    end
+  end
+
+  describe '#fetch_season_details' do
+    subject { described_class.fetch_season_details(league_name, season_year) }
+
+    let(:league_name) { described_class::NAME::NBA }
+    let(:season_year) { 2026 }
+    let(:path) { "/apis/site/v2/sports/basketball/nba/scoreboard?dates=#{Time.new(season_year).strftime('%Y%m%d')}" }
+    let(:status) { 200 }
+    let(:response) do
+      {
+        'leagues' => [
+          {
+            'season' => {
+              'year' => season_year,
+              'startDate' => Time.now.strftime('%Y%m%d'),
+              'endDate' => Time.now.strftime('%Y%m%d')
+            }
+          }
+        ]
+      }
+    end
+
+    before do
+      stub_request(:get, "https://site.web.api.espn.com#{path}")
+        .to_return(status: status, body: response.to_json, headers: { 'Content-Type' => 'application/json' })
+    end
+
+    context 'when the league name is not valid' do
+      let(:league_name) { 'invalid' }
+
+      it 'raises an error' do
+        expect { subject }.to raise_error(ArgumentError, 'Unknown league name: invalid')
+      end
+    end
+
+    context 'when the season year is not an integer' do
+      let(:path) { nil }
+      let(:season_year) { 'nba' }
+
+      it 'raises an error' do
+        expect { subject }.to raise_error(ArgumentError, 'Season year must be an integer')
+      end
+    end
+
+    it 'sends a request to the ESPN season details path' do
+      expect_any_instance_of(EspnPub::Client).to receive(:send_request).with(path).and_return(response)
+      subject
+    end
+
+    context 'when the request is successful' do
+      context 'when the season details are found' do
+        it 'returns the season details' do
+          expect(subject).to eq({ year: 2026, start_date: Time.now.to_date, end_date: Time.now.to_date })
+        end
+      end
+
+      context 'when the season details are not found' do
+        let(:response) { { 'leagues' => [] } }
+
+        it 'returns an empty hash' do
+          expect(subject).to eq({})
+        end
       end
     end
   end

@@ -22,6 +22,24 @@ module EspnPub
 
       attr_reader :name
 
+      def self.fetch_season_details(name, season_year)
+        raise ArgumentError, "Unknown league name: #{name}" unless NAME_TO_SPORT.key?(name)
+        raise ArgumentError, 'Season year must be an integer' unless season_year.to_i.positive?
+
+        path = format GAMES_PATH, EspnPub::Client::API_VERSION, NAME_TO_SPORT[name], name
+        path += "?dates=#{Time.new(season_year).strftime('%Y%m%d')}"
+        resp = EspnPub::Client.new.send_request(path)
+        season = resp.dig('leagues', 0, 'season')
+
+        return {} unless season
+
+        {
+          year: season['year'],
+          start_date: Date.parse(season['startDate']),
+          end_date: Date.parse(season['endDate'])
+        }
+      end
+
       # Initialize a League instance.
       #
       # @param name [String] The league identifier string.
