@@ -128,12 +128,12 @@ RSpec.describe EspnPub::Entities::League do
     let(:competitor_team2) { Faker::Number.number(digits: 5).to_s }
     let(:competitor_team3) { Faker::Number.number(digits: 5).to_s }
     let(:competitor_team4) { Faker::Number.number(digits: 5).to_s }
-
     let(:games_payload) do
       [
         {
           'id' => Faker::Number.number(digits: 10).to_s,
           'date' => Time.now.iso8601,
+          'season' => { 'type' => EspnPub::Entities::Game::Type::REGULAR },
           'competitions' => [
             {
               'competitors' => [
@@ -203,6 +203,7 @@ RSpec.describe EspnPub::Entities::League do
             expect(game.home_team.id).to eq(games_payload[idx].dig('competitions', 0, 'competitors', 0, 'id'))
             expect(game.away_team.id).to eq(games_payload[idx].dig('competitions', 0, 'competitors', 1, 'id'))
             expect(game.date).to eq(DateTime.parse(games_payload[idx]['date']))
+            expect(game.type).to eq(EspnPub::Entities::Game::GAME_TYPES[games_payload[idx].dig('season', 'type')])
           end
         end
       end

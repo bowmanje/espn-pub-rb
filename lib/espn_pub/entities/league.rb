@@ -86,6 +86,7 @@ module EspnPub
         (games_resp['events'] || []).map do |game_data|
           EspnPub::Entities::Game.new(
             id: game_data['id'],
+            type: Game::GAME_TYPES[game_data.dig('season', 'type')],
             home_team: EspnPub::Entities::Team.fetch_by_id(
               id: game_data.dig('competitions', 0, 'competitors', 0, 'id'),
               sport: sport,
