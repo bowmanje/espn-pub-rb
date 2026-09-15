@@ -20,13 +20,13 @@ module EspnPub
         'nfl' => 'football'
       }.freeze
 
-      attr_reader :name
+      attr_reader :league_name
 
-      def self.fetch_season_details(name, season_year)
-        raise ArgumentError, "Unknown league name: #{name}" unless NAME_TO_SPORT.key?(name)
+      def self.fetch_season_details(league_name, season_year)
+        raise ArgumentError, "Unknown league name: #{league_name}" unless NAME_TO_SPORT.key?(league_name)
         raise ArgumentError, 'Season year must be an integer' unless season_year.to_i.positive?
 
-        path = format GAMES_PATH, EspnPub::Client::API_VERSION, NAME_TO_SPORT[name], name
+        path = format GAMES_PATH, EspnPub::Client::API_VERSION, NAME_TO_SPORT[league_name], league_name
         path += "?dates=#{Time.new(season_year).strftime('%Y%m%d')}"
         resp = EspnPub::Client.new.send_request(path)
         season = resp.dig('leagues', 0, 'season')
@@ -42,9 +42,9 @@ module EspnPub
 
       # Initialize a League instance.
       #
-      # @param name [String] The league identifier string.
-      def initialize(name)
-        @name = name
+      # @param league_name [String] The league identifier string.
+      def initialize(league_name)
+        @league_name = normalize_name(league_name)
         super()
       end
 
@@ -54,7 +54,7 @@ module EspnPub
       def teams
         unless defined?(@teams)
           begin
-            path = format TEAMS_PATH, client.version, sport, name
+            path = format TEAMS_PATH, client.version, sport, league_name
             teams_resp = client.send_request(path)
             @teams = (teams_resp.dig('sports', 0, 'leagues', 0, 'teams') || []).map do |team_data|
               EspnPub::Entities::Team.new(
@@ -63,11 +63,11 @@ module EspnPub
                 location: team_data.dig('team', 'location'),
                 abbreviation: team_data.dig('team', 'abbreviation'),
                 sport: sport,
-                league: name
+                league_name: league_name
               )
             end
           rescue Client::UnexpectedResponseCodeError => e
-            warn "Failed to fetch teams for league #{name}: #{e.message}"
+            warn "Failed to fetch teams for league #{league_name}: #{e.message}"
             return []
           end
         end
@@ -80,7 +80,7 @@ module EspnPub
       # @param date [Date, DateTime, nil] An optional date to filter games.
       # @return [Array<EspnPub::Entities::Game>]
       def games(date: nil)
-        path = format GAMES_PATH, client.version, sport, name
+        path = format GAMES_PATH, client.version, sport, league_name
         path += "?dates=#{date.strftime('%Y%m%d')}" if date
         games_resp = client.send_request(path)
         (games_resp['events'] || []).map do |game_data|
@@ -90,18 +90,18 @@ module EspnPub
             home_team: EspnPub::Entities::Team.fetch_by_id(
               id: game_data.dig('competitions', 0, 'competitors', 0, 'id'),
               sport: sport,
-              league: name
+              league_name: league_name
             ),
             away_team: EspnPub::Entities::Team.fetch_by_id(
               id: game_data.dig('competitions', 0, 'competitors', 1, 'id'),
               sport: sport,
-              league: name
+              league_name: league_name
             ),
             date: DateTime.parse(game_data['date'])
           )
         end
       rescue Client::UnexpectedResponseCodeError => e
-        warn "Failed to fetch games for league #{name}: #{e.message}"
+        warn "Failed to fetch games for league #{league_name}: #{e.message}"
         []
       end
 
@@ -109,7 +109,7 @@ module EspnPub
       #
       # @return [String, nil] The sport name or nil when unknown.
       def sport
-        NAME_TO_SPORT[name]
+        NAME_TO_SPORT[league_name]
       end
     end
   end

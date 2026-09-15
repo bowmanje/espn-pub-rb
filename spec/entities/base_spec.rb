@@ -27,4 +27,14 @@ RSpec.describe EspnPub::Entities::Base do
       expect(subject.version).to eq('v2')
     end
   end
+
+  describe '#normalize_name' do
+    subject { described_class.new.send :normalize_name, name }
+
+    let(:name) { Faker::Color.color_name.upcase }
+
+    it 'returns the correct name' do
+      expect(subject).to eq(name.downcase)
+    end
+  end
 end

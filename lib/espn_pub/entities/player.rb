@@ -10,7 +10,7 @@ module EspnPub
 
       attr_reader :id,
                   :sport,
-                  :league,
+                  :league_name,
                   :first_name,
                   :last_name,
                   :position,
@@ -27,7 +27,7 @@ module EspnPub
       #
       # @param id [String] The player identifier.
       # @param sport [String] The sport name.
-      # @param league [String] The league identifier.
+      # @param league_name [String] The league identifier.
       # @param first_name [String, nil] The player's first name.
       # @param last_name [String, nil] The player's last name.
       # @param position [String, nil] The player's position abbreviation.
@@ -39,11 +39,11 @@ module EspnPub
       # @param height [String, nil] The player's listed height.
       # @param weight [String, nil] The player's listed weight.
       # @param debut_year [Integer, nil] The year the player made their debut.
-      def initialize(id:, sport:, league:, first_name: nil, last_name: nil, position: nil, team_id: nil,
+      def initialize(id:, sport:, league_name:, first_name: nil, last_name: nil, position: nil, team_id: nil,
                      date_of_birth: nil, birth_city: nil, birth_state: nil, birth_country: nil, height: nil, weight: nil, debut_year: nil)
         @id = id
         @sport = sport
-        @league = league
+        @league_name = league_name
         @first_name = first_name
         @last_name = last_name
         @position = position
@@ -64,9 +64,9 @@ module EspnPub
       # @param sport [String] The sport name.
       # @param league [String] The league identifier.
       # @return [Player, nil] The player, or nil when the request fails or data is missing.
-      def self.fetch_by_id(id:, sport:, league:)
+      def self.fetch_by_id(id:, sport:, league_name:)
         client = EspnPub::Client.new
-        path = format ATHLETE_PATH, sport, league, id
+        path = format ATHLETE_PATH, sport, league_name, id
         begin
           athlete_data = client.send_request(path)['athlete']
         rescue Client::UnexpectedResponseCodeError => e
@@ -79,7 +79,7 @@ module EspnPub
         new(
           id: athlete_data['id'],
           sport: sport,
-          league: league,
+          league_name: league_name,
           first_name: athlete_data['firstName'],
           last_name: athlete_data['lastName'],
           position: athlete_data.dig('position', 'abbreviation'),

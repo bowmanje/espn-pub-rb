@@ -12,7 +12,7 @@ module EspnPub
                   :location,
                   :abbreviation,
                   :sport,
-                  :league,
+                  :league_name,
                   :venue
 
       # Initialize a Team entity.
@@ -22,24 +22,24 @@ module EspnPub
       # @param location [String] The team location.
       # @param abbreviation [String] The team abbreviation.
       # @param sport [String] The sport name.
-      # @param league [String] The league identifier.
+      # @param league_name [String] The league identifier.
       # @param venue [EspnPub::Entities::Venue, nil] The team's home venue.
-      def initialize(id:, name:, location:, abbreviation:, sport:, league:, venue: nil)
+      def initialize(id:, name:, location:, abbreviation:, sport:, league_name:, venue: nil)
         @id = id
         @name = name
         @location = location
         @abbreviation = abbreviation
         @sport = sport
-        @league = league
+        @league_name = league_name
         @venue = venue
         super()
       end
 
-      def self.fetch_by_id(id:, sport:, league:, user_agent: nil)
+      def self.fetch_by_id(id:, sport:, league_name:, user_agent: nil)
         client = EspnPub::Client.new
         client.user_agent = user_agent if user_agent
 
-        path = format TEAM_PATH, client.version, sport, league, id
+        path = format TEAM_PATH, client.version, sport, league_name, id
         begin
           team_data = client.send_request(path)['team']
         rescue Client::UnexpectedResponseCodeError => e
@@ -55,7 +55,7 @@ module EspnPub
           location: team_data['location'],
           abbreviation: team_data['abbreviation'],
           sport: sport,
-          league: league,
+          league_name: league_name,
           venue: EspnPub::Entities::Venue.from_api(team_data.dig('franchise', 'venue'))
         )
       end
@@ -66,13 +66,13 @@ module EspnPub
       def players
         unless defined?(@roster)
           begin
-            path = format ROSTER_PATH, client.version, sport, league, id
+            path = format ROSTER_PATH, client.version, sport, league_name, id
             roster_resp = client.send_request(path)
             @roster = (roster_resp['athletes'] || []).map do |athlete_data|
               EspnPub::Entities::Player.new(
                 id: athlete_data['id'],
                 sport: sport,
-                league: league,
+                league_name: league_name,
                 first_name: athlete_data['firstName'],
                 last_name: athlete_data['lastName'],
                 position: athlete_data['position']['abbreviation'],

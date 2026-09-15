@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe EspnPub::Entities::Player do
   let(:player_id) { Faker::Number.unique.number(digits: 7).to_s }
-  let(:sport) { 'basketball' }
-  let(:league) { 'nba' }
+  let(:league_name) { EspnPub::Entities::League::NAME::NBA }
+  let(:sport) { EspnPub::Entities::League::NAME_TO_SPORT[league_name] }
   let(:first_name) { Faker::Name.first_name }
   let(:last_name) { Faker::Name.last_name }
   let(:position) { %w[G F C].sample }
@@ -23,7 +23,7 @@ RSpec.describe EspnPub::Entities::Player do
       described_class.new(
         id: player_id,
         sport: sport,
-        league: league,
+        league_name: league_name,
         first_name: first_name,
         last_name: last_name,
         position: position,
@@ -39,11 +39,11 @@ RSpec.describe EspnPub::Entities::Player do
     end
 
     it 'requires id' do
-      expect { described_class.new(sport: sport, league: league) }.to raise_error(ArgumentError)
+      expect { described_class.new(sport: sport, league_name: league_name) }.to raise_error(ArgumentError)
     end
 
     it 'requires sport' do
-      expect { described_class.new(id: player_id, league: league) }.to raise_error(ArgumentError)
+      expect { described_class.new(id: player_id, league_name: league_name) }.to raise_error(ArgumentError)
     end
 
     it 'requires league' do
@@ -59,7 +59,7 @@ RSpec.describe EspnPub::Entities::Player do
     end
 
     it 'has the correct league' do
-      expect(subject.league).to eq(league)
+      expect(subject.league_name).to eq(league_name)
     end
 
     it 'has the correct first_name' do
@@ -100,9 +100,9 @@ RSpec.describe EspnPub::Entities::Player do
   end
 
   describe '.fetch_by_id' do
-    subject { described_class.fetch_by_id(id: player_id, sport: sport, league: league) }
+    subject { described_class.fetch_by_id(id: player_id, sport: sport, league_name: league_name) }
 
-    let(:path) { "/apis/common/v3/sports/#{sport}/#{league}/athletes/#{player_id}" }
+    let(:path) { "/apis/common/v3/sports/#{sport}/#{league_name}/athletes/#{player_id}" }
     let(:status) { 200 }
     let(:athlete_response) do
       {
@@ -152,7 +152,7 @@ RSpec.describe EspnPub::Entities::Player do
           expect(subject.weight).to eq(weight)
           expect(subject.debut_year).to eq(debut_year)
           expect(subject.sport).to eq(sport)
-          expect(subject.league).to eq(league)
+          expect(subject.league_name).to eq(league_name)
         end
       end
 
@@ -198,7 +198,7 @@ RSpec.describe EspnPub::Entities::Player do
       described_class.new(
         id: '1',
         sport: 'basketball',
-        league: 'nba',
+        league_name: 'nba',
         first_name: first_name,
         last_name: last_name
       )

@@ -3,13 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe EspnPub::Entities::League do
-  describe '#initialize' do
-    subject { described_class.new(name) }
+  let(:league_name) { described_class::NAME::NBA }
 
-    let(:name) { Faker::Color.color_name }
+  describe '#initialize' do
+    subject { described_class.new(league_name) }
+
+    let(:league_name) { Faker::Color.color_name }
 
     it 'has the correct name' do
-      expect(subject.name).to eq(name)
+      expect(subject.league_name).to eq(league_name)
     end
 
     it 'has a client from Base' do
@@ -36,7 +38,7 @@ RSpec.describe EspnPub::Entities::League do
   describe '#teams' do
     subject { league.teams }
 
-    let(:league) { described_class.new(described_class::NAME::NBA) }
+    let(:league) { described_class.new(league_name) }
     let(:teams_payload) do
       [
         {
@@ -73,7 +75,7 @@ RSpec.describe EspnPub::Entities::League do
       }
     end
 
-    let(:path) { '/apis/site/v2/sports/basketball/nba/teams' }
+    let(:path) { "/apis/site/v2/sports/#{league.sport}/#{league_name}/teams" }
 
     before do
       stub_request(:get, "https://site.web.api.espn.com#{path}")
@@ -121,9 +123,8 @@ RSpec.describe EspnPub::Entities::League do
   describe '#games' do
     subject { league.games(date: game_date) }
 
-    let(:league) { described_class.new(described_class::NAME::NBA) }
+    let(:league) { described_class.new(league_name) }
     let(:sport) { league.sport }
-    let(:name) { league.name }
     let(:competitor_team1) { Faker::Number.number(digits: 5).to_s }
     let(:competitor_team2) { Faker::Number.number(digits: 5).to_s }
     let(:competitor_team3) { Faker::Number.number(digits: 5).to_s }
@@ -165,10 +166,10 @@ RSpec.describe EspnPub::Entities::League do
       }
     end
 
-    let(:competitor_team_path1) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team1}" }
-    let(:competitor_team_path2) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team2}" }
-    let(:competitor_team_path3) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team3}" }
-    let(:competitor_team_path4) { "/apis/site/v2/sports/#{sport}/#{name}/teams/#{competitor_team4}" }
+    let(:competitor_team_path1) { "/apis/site/v2/sports/#{sport}/#{league_name}/teams/#{competitor_team1}" }
+    let(:competitor_team_path2) { "/apis/site/v2/sports/#{sport}/#{league_name}/teams/#{competitor_team2}" }
+    let(:competitor_team_path3) { "/apis/site/v2/sports/#{sport}/#{league_name}/teams/#{competitor_team3}" }
+    let(:competitor_team_path4) { "/apis/site/v2/sports/#{sport}/#{league_name}/teams/#{competitor_team4}" }
 
     before do
       stub_request(:get, "https://site.web.api.espn.com#{path}")
@@ -189,7 +190,7 @@ RSpec.describe EspnPub::Entities::League do
 
     context 'when the game_date is nil' do
       let(:game_date) { nil }
-      let(:path) { '/apis/site/v2/sports/basketball/nba/scoreboard' }
+      let(:path) { "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard" }
 
       it 'sends a request to the ESPN games path' do
         expect(league.client).to receive(:send_request).with(path).and_return(games_response)
@@ -223,7 +224,7 @@ RSpec.describe EspnPub::Entities::League do
 
     context 'when the game_date is not nil' do
       let(:game_date) { Date.today }
-      let(:path) { "/apis/site/v2/sports/basketball/nba/scoreboard?dates=#{game_date.strftime('%Y%m%d')}" }
+      let(:path) { "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard?dates=#{game_date.strftime('%Y%m%d')}" }
 
       it 'sends a request to the ESPN games path' do
         expect(league.client).to receive(:send_request).with(path).and_return(games_response)
@@ -235,9 +236,9 @@ RSpec.describe EspnPub::Entities::League do
   describe '#fetch_season_details' do
     subject { described_class.fetch_season_details(league_name, season_year) }
 
-    let(:league_name) { described_class::NAME::NBA }
+    let(:league) { described_class.new(league_name) }
     let(:season_year) { 2026 }
-    let(:path) { "/apis/site/v2/sports/basketball/nba/scoreboard?dates=#{Time.new(season_year).strftime('%Y%m%d')}" }
+    let(:path) { "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard?dates=#{Time.new(season_year).strftime('%Y%m%d')}" }
     let(:status) { 200 }
     let(:response) do
       {
@@ -268,7 +269,7 @@ RSpec.describe EspnPub::Entities::League do
 
     context 'when the season year is not an integer' do
       let(:path) { nil }
-      let(:season_year) { 'nba' }
+      let(:season_year) { Faker::Color.color_name }
 
       it 'raises an error' do
         expect { subject }.to raise_error(ArgumentError, 'Season year must be an integer')

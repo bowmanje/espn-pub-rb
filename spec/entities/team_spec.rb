@@ -7,8 +7,8 @@ RSpec.describe EspnPub::Entities::Team do
   let(:name) { Faker::Sports::Basketball.team.split(' ').last }
   let(:location) { Faker::Address.city }
   let(:abbreviation) { Faker::Alphanumeric.alpha(number: 3).upcase }
-  let(:sport) { EspnPub::Entities::League::NAME_TO_SPORT[league] }
-  let(:league) { EspnPub::Entities::League::NAME::NBA }
+  let(:sport) { EspnPub::Entities::League::NAME_TO_SPORT[league_name] }
+  let(:league_name) { EspnPub::Entities::League::NAME::NBA }
   let(:positions) { %w[G F C] }
   let(:venue_id) { Faker::Number.unique.number(digits: 4).to_s }
   let(:venue_name) { Faker::Company.name }
@@ -33,7 +33,7 @@ RSpec.describe EspnPub::Entities::Team do
         location: location,
         abbreviation: abbreviation,
         sport: sport,
-        league: league
+        league_name: league_name
       )
     end
 
@@ -58,7 +58,7 @@ RSpec.describe EspnPub::Entities::Team do
     end
 
     it 'has the correct league' do
-      expect(subject.league).to eq(league)
+      expect(subject.league_name).to eq(league_name)
     end
 
     it 'defaults venue to nil' do
@@ -73,7 +73,7 @@ RSpec.describe EspnPub::Entities::Team do
           location: location,
           abbreviation: abbreviation,
           sport: sport,
-          league: league,
+          league_name: league_name,
           venue: venue
         )
       end
@@ -89,9 +89,9 @@ RSpec.describe EspnPub::Entities::Team do
   end
 
   describe '.fetch_by_id' do
-    subject { described_class.fetch_by_id(id: team_id, sport: sport, league: league) }
+    subject { described_class.fetch_by_id(id: team_id, sport: sport, league_name: league_name) }
 
-    let(:path) { "/apis/site/v2/sports/#{sport}/#{league}/teams/#{team_id}" }
+    let(:path) { "/apis/site/v2/sports/#{sport}/#{league_name}/teams/#{team_id}" }
     let(:status) { 200 }
     let(:team_response) do
       {
@@ -135,7 +135,7 @@ RSpec.describe EspnPub::Entities::Team do
           expect(subject.location).to eq(location)
           expect(subject.abbreviation).to eq(abbreviation)
           expect(subject.sport).to eq(sport)
-          expect(subject.league).to eq(league)
+          expect(subject.league_name).to eq(league_name)
           expect(subject.venue).to be_a(EspnPub::Entities::Venue)
           expect(subject.venue.id).to eq(venue_id)
           expect(subject.venue.full_name).to eq(venue_name)
@@ -195,7 +195,7 @@ RSpec.describe EspnPub::Entities::Team do
         location: location,
         abbreviation: abbreviation,
         sport: sport,
-        league: league
+        league_name: league_name
       )
     end
 
@@ -229,7 +229,7 @@ RSpec.describe EspnPub::Entities::Team do
       }
     end
 
-    let(:path) { "/apis/site/v2/sports/basketball/nba/teams/#{team_id}/roster" }
+    let(:path) { "/apis/site/v2/sports/#{sport}/#{league_name}/teams/#{team_id}/roster" }
 
     before do
       stub_request(:get, "https://site.web.api.espn.com#{path}")
@@ -287,7 +287,7 @@ RSpec.describe EspnPub::Entities::Team do
         location: location,
         abbreviation: abbreviation,
         sport: sport,
-        league: league
+        league_name: league_name
       )
     end
 

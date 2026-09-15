@@ -24,6 +24,10 @@ module EspnPub
           version: Client::API_VERSION
         )
       end
+
+      def normalize_name(name)
+        name.gsub(/[^a-zA-Z0-9]/i, '_').downcase
+      end
     end
   end
 end
