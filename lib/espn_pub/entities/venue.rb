@@ -7,10 +7,7 @@ module EspnPub
       attr_reader :id,
                   :full_name,
                   :short_name,
-                  :city,
-                  :state,
-                  :zip_code,
-                  :country,
+                  :address_data,
                   :indoor,
                   :grass
 
@@ -19,21 +16,14 @@ module EspnPub
       # @param id [String] The venue identifier.
       # @param full_name [String, nil] The venue's full name.
       # @param short_name [String, nil] The venue's short name.
-      # @param city [String, nil] The venue's city.
-      # @param state [String, nil] The venue's state or province.
-      # @param zip_code [String, nil] The venue's postal code.
-      # @param country [String, nil] The venue's country.
+      # @param address_data [Hash, nil] The venue's address data.
       # @param indoor [Boolean, nil] Whether the venue is indoors.
       # @param grass [Boolean, nil] Whether the venue has a grass surface.
-      def initialize(id:, full_name: nil, short_name: nil, city: nil, state: nil, zip_code: nil, country: nil,
-                     indoor: nil, grass: nil)
+      def initialize(id:, full_name: nil, short_name: nil, indoor: nil, grass: nil, address_data: {})
         @id = id
         @full_name = full_name
         @short_name = short_name
-        @city = city
-        @state = state
-        @zip_code = zip_code
-        @country = country
+        @address_data = address_data
         @indoor = indoor
         @grass = grass
         super()
@@ -50,10 +40,7 @@ module EspnPub
           id: data['id'],
           full_name: data['fullName'],
           short_name: data['shortName'],
-          city: data.dig('address', 'city'),
-          state: data.dig('address', 'state'),
-          zip_code: data.dig('address', 'zipCode'),
-          country: data.dig('address', 'country'),
+          address_data: data['address'],
           indoor: data['indoor'],
           grass: data['grass']
         )

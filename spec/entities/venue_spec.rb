@@ -6,10 +6,14 @@ RSpec.describe EspnPub::Entities::Venue do
   let(:venue_id) { Faker::Number.unique.number(digits: 4).to_s }
   let(:full_name) { Faker::Company.name }
   let(:short_name) { full_name.split.first }
-  let(:city) { Faker::Address.city }
-  let(:state) { Faker::Address.state_abbr }
-  let(:zip_code) { Faker::Address.zip_code }
-  let(:country) { Faker::Address.country }
+  let(:address_data) do
+    {
+      'city' => Faker::Address.city,
+      'state' => Faker::Address.state_abbr,
+      'zipCode' => Faker::Address.zip_code,
+      'country' => Faker::Address.country
+    }
+  end
   let(:indoor) { true }
   let(:grass) { false }
 
@@ -19,10 +23,7 @@ RSpec.describe EspnPub::Entities::Venue do
         id: venue_id,
         full_name: full_name,
         short_name: short_name,
-        city: city,
-        state: state,
-        zip_code: zip_code,
-        country: country,
+        address_data: address_data,
         indoor: indoor,
         grass: grass
       )
@@ -44,20 +45,8 @@ RSpec.describe EspnPub::Entities::Venue do
       expect(subject.short_name).to eq(short_name)
     end
 
-    it 'has the correct city' do
-      expect(subject.city).to eq(city)
-    end
-
-    it 'has the correct state' do
-      expect(subject.state).to eq(state)
-    end
-
-    it 'has the correct zip_code' do
-      expect(subject.zip_code).to eq(zip_code)
-    end
-
-    it 'has the correct country' do
-      expect(subject.country).to eq(country)
+    it 'has the correct address_data' do
+      expect(subject.address_data).to eq(address_data)
     end
 
     it 'has the correct indoor' do
@@ -82,10 +71,10 @@ RSpec.describe EspnPub::Entities::Venue do
         'fullName' => full_name,
         'shortName' => short_name,
         'address' => {
-          'city' => city,
-          'state' => state,
-          'zipCode' => zip_code,
-          'country' => country
+          'city' => Faker::Address.city,
+          'state' => Faker::Address.state_abbr,
+          'zipCode' => Faker::Address.zip_code,
+          'country' => Faker::Address.country
         },
         'indoor' => indoor,
         'grass' => grass
@@ -97,10 +86,7 @@ RSpec.describe EspnPub::Entities::Venue do
       expect(subject.id).to eq(venue_id)
       expect(subject.full_name).to eq(full_name)
       expect(subject.short_name).to eq(short_name)
-      expect(subject.city).to eq(city)
-      expect(subject.state).to eq(state)
-      expect(subject.zip_code).to eq(zip_code)
-      expect(subject.country).to eq(country)
+      expect(subject.address_data).to eq(api_data['address'])
       expect(subject.indoor).to eq(indoor)
       expect(subject.grass).to eq(grass)
     end

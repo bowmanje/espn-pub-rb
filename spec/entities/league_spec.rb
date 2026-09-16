@@ -173,19 +173,39 @@ RSpec.describe EspnPub::Entities::League do
 
     before do
       stub_request(:get, "https://site.web.api.espn.com#{path}")
-        .to_return(status: status, body: games_response.to_json, headers: { 'Content-Type' => 'application/json' })
+        .to_return(
+          status: status,
+          body: games_response.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
 
       stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path1}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team1 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+        .to_return(
+          status: status,
+          body: { 'team' => { 'id' => competitor_team1 } }.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
 
       stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path2}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team2 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+        .to_return(
+          status: status,
+          body: { 'team' => { 'id' => competitor_team2 } }.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
 
       stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path3}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team3 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+        .to_return(
+          status: status,
+          body: { 'team' => { 'id' => competitor_team3 } }.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
 
       stub_request(:get, "https://site.web.api.espn.com#{competitor_team_path4}")
-        .to_return(status: status, body: { 'team' => { 'id' => competitor_team4 } }.to_json, headers: { 'Content-Type' => 'application/json' })
+        .to_return(
+          status: status,
+          body: { 'team' => { 'id' => competitor_team4 } }.to_json,
+          headers: { 'Content-Type' => 'application/json' }
+        )
     end
 
     context 'when the game_date is nil' do
@@ -224,7 +244,9 @@ RSpec.describe EspnPub::Entities::League do
 
     context 'when the game_date is not nil' do
       let(:game_date) { Date.today }
-      let(:path) { "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard?dates=#{game_date.strftime('%Y%m%d')}" }
+      let(:path) do
+        "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard?dates=#{game_date.strftime('%Y%m%d')}"
+      end
 
       it 'sends a request to the ESPN games path' do
         expect(league.client).to receive(:send_request).with(path).and_return(games_response)
@@ -238,7 +260,9 @@ RSpec.describe EspnPub::Entities::League do
 
     let(:league) { described_class.new(league_name) }
     let(:season_year) { 2026 }
-    let(:path) { "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard?dates=#{Time.new(season_year).strftime('%Y%m%d')}" }
+    let(:path) do
+      "/apis/site/v2/sports/#{league.sport}/#{league_name}/scoreboard?dates=#{Time.new(season_year).strftime('%Y%m%d')}"
+    end
     let(:status) { 200 }
     let(:response) do
       {

@@ -16,7 +16,7 @@ module EspnPub
         3 => Type::POSTSEASON
       }.freeze
 
-      attr_reader :id, :home_team, :away_team, :date, :type
+      attr_reader :id, :home_team, :away_team, :date, :type, :venue
 
       # Initialize a Game entity.
       #
@@ -25,12 +25,14 @@ module EspnPub
       # @param away_team [EspnPub::Entities::Team] The away team.
       # @param date [DateTime] The scheduled game date.
       # @param type [String] The type of the game.
-      def initialize(id:, home_team:, away_team:, date:, type: nil)
+      # @param venue [EspnPub::Entities::Venue] The venue of the game.
+      def initialize(id:, home_team:, away_team:, date:, type: nil, venue: nil)
         @id = id
         @home_team = home_team
         @away_team = away_team
         @date = date
         @type = type
+        @venue = venue
         super()
       end
     end

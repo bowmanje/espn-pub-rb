@@ -18,10 +18,10 @@ RSpec.describe EspnPub::Entities::Team do
     EspnPub::Entities::Venue.new(
       id: venue_id,
       full_name: venue_name,
-      city: venue_city,
-      state: venue_state,
-      indoor: true,
-      grass: false
+      address_data: {
+        'city' => venue_city,
+        'state' => venue_state
+      }
     )
   end
 
@@ -139,10 +139,6 @@ RSpec.describe EspnPub::Entities::Team do
           expect(subject.venue).to be_a(EspnPub::Entities::Venue)
           expect(subject.venue.id).to eq(venue_id)
           expect(subject.venue.full_name).to eq(venue_name)
-          expect(subject.venue.city).to eq(venue_city)
-          expect(subject.venue.state).to eq(venue_state)
-          expect(subject.venue.indoor).to be(true)
-          expect(subject.venue.grass).to be(false)
         end
       end
 

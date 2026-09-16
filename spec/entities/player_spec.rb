@@ -14,9 +14,13 @@ RSpec.describe EspnPub::Entities::Player do
   let(:height) { "6' 3\"" }
   let(:weight) { '230 lbs' }
   let(:debut_year) { 2017 }
-  let(:birth_city) { 'Tyler' }
-  let(:birth_state) { 'TX' }
-  let(:birth_country) { 'USA' }
+  let(:birth_place_data) do
+    {
+      'city' => Faker::Address.city,
+      'state' => Faker::Address.state_abbr,
+      'country' => Faker::Address.country
+    }
+  end
 
   describe '#initialize' do
     subject do
@@ -29,9 +33,7 @@ RSpec.describe EspnPub::Entities::Player do
         position: position,
         team_id: team_id,
         date_of_birth: date_of_birth,
-        birth_city: birth_city,
-        birth_state: birth_state,
-        birth_country: birth_country,
+        birth_place_data: birth_place_data,
         height: height,
         weight: weight,
         debut_year: debut_year
@@ -111,11 +113,7 @@ RSpec.describe EspnPub::Entities::Player do
           'firstName' => first_name,
           'lastName' => last_name,
           'dateOfBirth' => '1995-09-17T00:00:00Z',
-          'birthPlace' => {
-            'city' => birth_city,
-            'state' => birth_state,
-            'country' => birth_country
-          },
+          'birthPlace' => birth_place_data,
           'displayHeight' => height,
           'displayWeight' => weight,
           'debutYear' => debut_year,
@@ -145,9 +143,9 @@ RSpec.describe EspnPub::Entities::Player do
           expect(subject.position).to eq(position)
           expect(subject.team_id).to eq(team_id)
           expect(subject.date_of_birth).to eq(date_of_birth)
-          expect(subject.birth_city).to eq(birth_city)
-          expect(subject.birth_state).to eq(birth_state)
-          expect(subject.birth_country).to eq(birth_country)
+          expect(subject.birth_city).to eq(birth_place_data['city'])
+          expect(subject.birth_state).to eq(birth_place_data['state'])
+          expect(subject.birth_country).to eq(birth_place_data['country'])
           expect(subject.height).to eq(height)
           expect(subject.weight).to eq(weight)
           expect(subject.debut_year).to eq(debut_year)

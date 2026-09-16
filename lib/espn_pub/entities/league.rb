@@ -97,7 +97,8 @@ module EspnPub
               sport: sport,
               league_name: league_name
             ),
-            date: DateTime.parse(game_data['date'])
+            date: DateTime.parse(game_data['date']),
+            venue: EspnPub::Entities::Venue.from_api(game_data.dig('competitions', 0, 'venue'))
           )
         end
       rescue Client::UnexpectedResponseCodeError => e

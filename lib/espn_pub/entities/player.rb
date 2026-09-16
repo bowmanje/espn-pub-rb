@@ -33,14 +33,13 @@ module EspnPub
       # @param position [String, nil] The player's position abbreviation.
       # @param team_id [String, nil] The identifier of the player's team.
       # @param date_of_birth [Date, nil] The player's date of birth.
-      # @param birth_city [String, nil] The player's birth city.
-      # @param birth_state [String, nil] The player's birth state.
-      # @param birth_country [String, nil] The player's birth country.
+      # @param birth_place_data [Hash, nil] The player's birth place data.
       # @param height [String, nil] The player's listed height.
       # @param weight [String, nil] The player's listed weight.
       # @param debut_year [Integer, nil] The year the player made their debut.
       def initialize(id:, sport:, league_name:, first_name: nil, last_name: nil, position: nil, team_id: nil,
-                     date_of_birth: nil, birth_city: nil, birth_state: nil, birth_country: nil, height: nil, weight: nil, debut_year: nil)
+                     date_of_birth: nil, height: nil, weight: nil, debut_year: nil,
+                     birth_place_data: {})
         @id = id
         @sport = sport
         @league_name = league_name
@@ -49,9 +48,9 @@ module EspnPub
         @position = position
         @team_id = team_id
         @date_of_birth = self.class.parse_date_of_birth(date_of_birth)
-        @birth_city = birth_city
-        @birth_state = birth_state
-        @birth_country = birth_country
+        @birth_city = birth_place_data['city']
+        @birth_state = birth_place_data['state']
+        @birth_country = birth_place_data['country']
         @height = height
         @weight = weight
         @debut_year = debut_year
@@ -85,9 +84,7 @@ module EspnPub
           position: athlete_data.dig('position', 'abbreviation'),
           team_id: athlete_data.dig('team', 'id'),
           date_of_birth: parse_date_of_birth(athlete_data['dateOfBirth']),
-          birth_city: athlete_data.dig('birthPlace', 'city'),
-          birth_state: athlete_data.dig('birthPlace', 'state'),
-          birth_country: athlete_data.dig('birthPlace', 'country'),
+          birth_place_data: athlete_data['birthPlace'],
           height: athlete_data['displayHeight'],
           weight: athlete_data['displayWeight'],
           debut_year: athlete_data['debutYear']
