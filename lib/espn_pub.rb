@@ -13,6 +13,7 @@ require_relative 'espn_pub/entities/team'
 require_relative 'espn_pub/entities/venue'
 require_relative 'espn_pub/entities/player'
 require_relative 'espn_pub/entities/game'
+require_relative 'espn_pub/entities/game_stat'
 
 module EspnPub
 end

@@ -84,7 +84,6 @@ module EspnPub
           position: athlete_data.dig('position', 'abbreviation'),
           team_id: athlete_data.dig('team', 'id'),
           date_of_birth: parse_date_of_birth(athlete_data['dateOfBirth']),
-          birth_place_data: athlete_data['birthPlace'],
           height: athlete_data['displayHeight'],
           weight: athlete_data['displayWeight'],
           debut_year: athlete_data['debutYear']
