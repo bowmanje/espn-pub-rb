@@ -143,8 +143,8 @@ RSpec.describe EspnPub::Entities::Player do
           expect(subject.position).to eq(position)
           expect(subject.team_id).to eq(team_id)
           expect(subject.date_of_birth).to eq(date_of_birth)
-          expect(subject.height).to eq(height)
-          expect(subject.weight).to eq(weight)
+          expect(subject.height).to eq(described_class.convert_height(height))
+          expect(subject.weight).to eq(described_class.convert_weight(weight))
           expect(subject.debut_year).to eq(debut_year)
           expect(subject.sport).to eq(sport)
           expect(subject.league_name).to eq(league_name)
@@ -200,5 +200,61 @@ RSpec.describe EspnPub::Entities::Player do
     end
 
     it { is_expected.to eq("#{first_name} #{last_name}") }
+  end
+
+  describe '.convert_height' do
+    subject { described_class.send(:convert_height, height) }
+
+    context 'when height is a string' do
+      let(:height) { '6\' 3"' }
+
+      it 'converts height to inches' do
+        expect(subject).to eq(75)
+      end
+    end
+
+    context 'when height is an integer' do
+      let(:height) { 75 }
+
+      it 'returns the height' do
+        expect(subject).to eq(height)
+      end
+    end
+
+    context 'when height is nil' do
+      let(:height) { nil }
+
+      it 'returns nil' do
+        expect(subject).to be_nil
+      end
+    end
+  end
+
+  describe '.convert_weight' do
+    subject { described_class.send(:convert_weight, weight) }
+
+    context 'when weight is a string' do
+      let(:weight) { '230 lbs' }
+
+      it 'converts weight to pounds' do
+        expect(subject).to eq(230)
+      end
+    end
+
+    context 'when weight is an integer' do
+      let(:weight) { 230 }
+
+      it 'returns the weight' do
+        expect(subject).to eq(weight)
+      end
+    end
+
+    context 'when weight is nil' do
+      let(:weight) { nil }
+
+      it 'returns nil' do
+        expect(subject).to be_nil
+      end
+    end
   end
 end

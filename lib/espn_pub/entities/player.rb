@@ -84,8 +84,8 @@ module EspnPub
           position: athlete_data.dig('position', 'abbreviation'),
           team_id: athlete_data.dig('team', 'id'),
           date_of_birth: parse_date_of_birth(athlete_data['dateOfBirth']),
-          height: athlete_data['displayHeight'],
-          weight: athlete_data['displayWeight'],
+          height: convert_height(athlete_data['displayHeight']),
+          weight: convert_weight(athlete_data['displayWeight']),
           debut_year: athlete_data['debutYear']
         )
       end
@@ -107,6 +107,25 @@ module EspnPub
         Date.parse(value)
       rescue ArgumentError
         nil
+      end
+
+      def self.convert_height(value)
+        return nil unless value
+        return value if value.is_a?(Integer)
+
+        return unless value.match(/'/)
+
+        feet, inches = value.split("'").map { |s| s.gsub(/[\s"]/, '').to_i }
+        (feet * 12) + inches
+      end
+
+      def self.convert_weight(value)
+        return nil unless value
+        return value if value.is_a?(Integer)
+
+        return unless value.match(/lbs/)
+
+        value.gsub(/ lbs/, '').to_i
       end
     end
   end
