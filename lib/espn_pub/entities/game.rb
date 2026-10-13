@@ -62,7 +62,7 @@ module EspnPub
                 stats_data[key] = athlete['stats'][index]
               end
               @player_game_stats << EspnPub::Entities::PlayerGameStat.new(
-                player: player, team: team, stats_data: stats_data
+                player: player, team: team, stats_data: stats_data, starter: athlete['starter']
               )
             end
           end

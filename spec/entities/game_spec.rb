@@ -65,11 +65,11 @@ RSpec.describe EspnPub::Entities::Game do
     let(:league_name) { EspnPub::Entities::League::NAME::NBA }
     let(:sport) { EspnPub::Entities::League::NAME_TO_SPORT[league_name] }
     let(:game_date) { DateTime.now }
-
     let(:stat_keys) { %w[MIN PTS REB] }
     let(:home_player_stats) { %w[32 28 7] }
     let(:away_player_stats) { %w[30 22 5] }
-
+    let(:home_player_starter) { true }
+    let(:away_player_starter) { false }
     let(:boxscore_players) do
       [
         {
@@ -80,7 +80,8 @@ RSpec.describe EspnPub::Entities::Game do
               'athletes' => [
                 {
                   'athlete' => { 'id' => home_player_id },
-                  'stats' => home_player_stats
+                  'stats' => home_player_stats,
+                  'starter' => home_player_starter
                 }
               ]
             }
@@ -94,7 +95,8 @@ RSpec.describe EspnPub::Entities::Game do
               'athletes' => [
                 {
                   'athlete' => { 'id' => away_player_id },
-                  'stats' => away_player_stats
+                  'stats' => away_player_stats,
+                  'starter' => away_player_starter
                 }
               ]
             }
@@ -128,11 +130,12 @@ RSpec.describe EspnPub::Entities::Game do
         expect(home_stat.player.id).to eq(home_player_id)
         expect(home_stat.team).to eq(home_team)
         expect(home_stat.stats_data).to eq('MIN' => '32', 'PTS' => '28', 'REB' => '7')
-
+        expect(home_stat.starter).to eq(home_player_starter)
         expect(away_stat.player).to be_a(EspnPub::Entities::Player)
         expect(away_stat.player.id).to eq(away_player_id)
         expect(away_stat.team).to eq(away_team)
         expect(away_stat.stats_data).to eq('MIN' => '30', 'PTS' => '22', 'REB' => '5')
+        expect(away_stat.starter).to eq(away_player_starter)
       end
 
       it 'caches the game stats and issues only one request' do
