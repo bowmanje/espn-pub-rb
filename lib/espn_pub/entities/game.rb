@@ -105,7 +105,7 @@ module EspnPub
 
       def labels
         ['FG', '3PT', 'FT', 'Rebounds', 'Offensive Rebounds', 'Defensive Rebounds', 'Assists', 'Steals', 'Blocks',
-         'Turnovers']
+         'Turnovers', 'Fouls']
       end
 
       def game_summary_response
